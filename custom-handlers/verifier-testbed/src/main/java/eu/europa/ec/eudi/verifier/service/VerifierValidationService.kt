@@ -120,7 +120,7 @@ class VerifierValidationService(
                 },
             )
 
-        val verifierLogs = providedLogs.toJsonContent("Verifier's Logs")
+        val verifierLogs = providedLogs.toContent("Verifier's Logs")
 
         report.apply {
             counters = ValidationCounters()
@@ -128,12 +128,12 @@ class VerifierValidationService(
             log.info("nonRecoverableErrors created: {}", nonRecoverableErrors)
             if (nonRecoverableErrors != null) {
                 context.item.add(
-                    nonRecoverableErrors.toJsonContent("Non-recoverable errors"),
+                    nonRecoverableErrors.toContent("Non-recoverable errors"),
                 )
                 counters.nrOfErrors = 1.toBigInteger()
             }
             if (warnings.isNotEmpty()) {
-                context.item.add(warnings.map { it["cause"] }.toStrings().toJsonContent("Validation warnings"))
+                context.item.add(warnings.map { it["cause"] }.toStrings().toContent("Validation warnings", "text/plain"))
             }
             counters.nrOfWarnings = warnings.size.toBigInteger()
         }
@@ -141,17 +141,20 @@ class VerifierValidationService(
         return ValidationResponse().apply { this.report = report }
     }
 
-    private fun List<String?>.toStrings(): String = this.joinToString(" \n ")
+    private fun List<String?>.toStrings(): String = this.joinToString(" " + System.lineSeparator() + " ")
 
-    private fun Any.toJsonContent(name: String): AnyContent =
+    private fun Any.toContent(
+        name: String,
+        type: String = "application/json",
+    ): AnyContent =
         AnyContent().apply {
             this.name = name
-            mimeType = "application/json"
+            mimeType = type
             encoding = "UTF-8"
             item.add(
                 utils.createAnyContentSimple(
                     "JSON Data",
-                    json.writer.writeValueAsString(this@toJsonContent),
+                    json.writer.writeValueAsString(this@toContent),
                     ValueEmbeddingEnumeration.STRING,
                 ),
             )
