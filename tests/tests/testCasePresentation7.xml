@@ -19,7 +19,7 @@
         <send id="dataReceived" desc="Send valid presentation request" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier">
             <input name="uri">$DOMAIN{endpointAddress} || "/ui/presentations"</input>
             <input name="method">"POST"</input>
-            <input name="body">'{"type":"vp_token","dcql_query":{"credentials":[{"id":"query_0","format":"dc+sd-jwt","meta":{"vct_values":["urn:eudi:pid:1"]}}]},"nonce":"'|| $nonce || '","request_uri_method":"get"}'</input>
+            <input name="body">'{"type":"vp_token","dcql_query":{"credentials":[{"id":"query_0","format":"dc+sd-jwt","meta":{"vct_values":["urn:eudi:pid:1"]}}]},"issuer_chain":"-----BEGIN CERTIFICATE-----\nMIICmzCCAkGgAwIBAgIUcIRBtysIv2tUHZUUW2tCVyE1HD4wCgYIKoZIzj0EAwIw\ngYcxCzAJBgNVBAYTAlVTMRgwFgYDVQQIDA9TdGF0ZSBvZiBVdG9waWExEjAQBgNV\nBAcMCVNhbiBSYW1vbjEaMBgGA1UECgwRT3BlbklEIEZvdW5kYXRpb24xCzAJBgNV\nBAsMAklUMSEwHwYDVQQDDBhjZXJ0aWZpY2F0aW9uLm9wZW5pZC5uZXQwHhcNMjUx\nMDA4MDkxMzQ1WhcNMjYxMDA4MDkxMzQ1WjCBhzELMAkGA1UEBhMCVVMxGDAWBgNV\nBAgMD1N0YXRlIG9mIFV0b3BpYTESMBAGA1UEBwwJU2FuIFJhbW9uMRowGAYDVQQK\nDBFPcGVuSUQgRm91bmRhdGlvbjELMAkGA1UECwwCSVQxITAfBgNVBAMMGGNlcnRp\nZmljYXRpb24ub3BlbmlkLm5ldDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJl+\nF1Jhzt/OVFihkGmGVZBbmJxdzNEIEzTk4xEQbbOMYySrhwwVm/dMBzpMq7vVARnR\nbjN7jDbNBXgJ2+ENa++jgYgwgYUwZAYDVR0RBF0wW4IYY2VydGlmaWNhdGlvbi5v\ncGVuaWQubmV0gh1kZW1vLmNlcnRpZmljYXRpb24ub3BlbmlkLm5ldIIgc3RhZ2lu\nZy5jZXJ0aWZpY2F0aW9uLm9wZW5pZC5uZXQwHQYDVR0OBBYEFK2eT4QnmGigLBTV\nOhRy1Y4HNNSnMAoGCCqGSM49BAMCA0gAMEUCIFd1YInyvs0sHfhlmQ59wtpDlZvv\nNdayLDFFSJ0ktvQXAiEAiMUwtWQF/U0scO2hnJTMdB5H3dj6gxmtZ7DqGQerMDE=\n-----END CERTIFICATE-----", "nonce":"'|| $nonce || '","request_uri_method":"get"}'</input>
             <input name="headers">$httpHeaders</input>
         </send>
         <verify handler="ExpressionValidator" desc="Validate correct http status" stopOnError="true">
@@ -57,7 +57,7 @@
         <log>$transaction_logs_url</log>
 
         <while title="HTTP Call Loop to verifier" desc="Make HTTP calls until attempts run out or status 200">
-            <cond><![CDATA[$attempt <= $maxAttempts and $responseStatus != '200']]></cond>
+            <cond><![CDATA[$attempt <= $maxAttempts]]></cond>
             <do>
                 <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
                 <send id="httpRequestPool" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier">
@@ -72,8 +72,8 @@
         </while>
 
         <log>"Final response status:" || $responseStatus</log>
-        <verify handler="ExpressionValidator" desc="Validate if log exists for transaction id on verifier">
-            <input name="expression">$responseStatus = "200"</input>
+        <verify handler="ExpressionValidator" desc="Validate that not a success event exists for this transaction id on verifier">
+            <input name="expression">$responseStatus = "400"</input>
             <input name="successMessage">'Flow is complete'</input>
             <input name="failureMessage">'Flow failed!'</input>
         </verify>
@@ -85,11 +85,8 @@
 
         <verify handler="$DOMAIN{validationService}" desc="Validate logs" >
             <input name="text">$transactionEventLogs{response}{body}</input>
-            <input name="expectedEvent">"certification_error"</input>
+            <input name="expectedEvent">"certificate_error"</input>
         </verify>
-        <interact id="messageReceipt" desc="Confirm message receipt">
-            <request name="messageReceived" desc="Did you receive the warning about untrusted IACA Certificate?" required="true"/>
-        </interact>
         <log>$transactionEventLogs{response}{body}</log>
     </steps>
     <output>

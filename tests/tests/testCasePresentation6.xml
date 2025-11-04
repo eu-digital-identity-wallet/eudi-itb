@@ -57,7 +57,7 @@
         <log>$transaction_logs_url</log>
 
         <while title="HTTP Call Loop to verifier" desc="Make HTTP calls until attempts run out or status 200">
-            <cond><![CDATA[$attempt <= $maxAttempts and $responseStatus != '200']]></cond>
+            <cond><![CDATA[$attempt <= $maxAttempts]]></cond>
             <do>
                 <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
                 <send id="httpRequestPool" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier">
@@ -72,8 +72,8 @@
         </while>
 
         <log>"Final response status:" || $responseStatus</log>
-        <verify handler="ExpressionValidator" desc="Validate if log exists for transaction id on verifier">
-            <input name="expression">$responseStatus = "200"</input>
+        <verify handler="ExpressionValidator" desc="Validate that not a success event exists for this transaction id on verifier">
+            <input name="expression">$responseStatus = "400"</input>
             <input name="successMessage">'Flow is complete'</input>
             <input name="failureMessage">'Flow failed!'</input>
         </verify>
