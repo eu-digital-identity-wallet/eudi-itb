@@ -32,7 +32,9 @@
         <etxn txnId="t1"/>
 
         <interact inputTitle="Scan the QR Code" desc="Scan the QR Code with your wallet." with="wallet">
+            <instruct desc="Click on the magnifying glass to display the QR code"/>
             <instruct desc="QR code to scan" mimeType="image/png">$dataReceived{response}{body}</instruct>
+            <instruct desc="After you present the credential on your wallet, click on the Close button to continue"/>
         </interact>
 
         <process output="transactionId" handler="CollectionUtils" operation="find">
