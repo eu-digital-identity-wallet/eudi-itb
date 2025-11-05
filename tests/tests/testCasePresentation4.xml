@@ -15,7 +15,8 @@
         <process output="nonce" handler="TokenGenerator" operation="uuid"/>
 
         <interact id="authReqUri" desc="Insert authorization request URI">
-            <request name="uri" desc="Please insert authorization request URI, leave it blank for default value" required="false"/>
+            <instruct desc='Optionally insert a custom Authorization request URI (in the format "scheme://path"). If left empty, the following value will be used: '>$DOMAIN{authUri}</instruct>
+            <request name="uri" desc='Custom authorization request URI' required="false"/>
         </interact>
 
         <if desc="Check if variable is empty">
