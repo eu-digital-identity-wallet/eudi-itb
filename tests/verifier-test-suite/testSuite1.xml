@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite id="verificationTest" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
     <metadata>
-        <gitb:name>Verification tests</gitb:name>
-        <gitb:description>Test suite to validate wallet is working with reference verifier.</gitb:description>
+        <gitb:name>Remote Presentation of PID and/or mDL</gitb:name>
+        <gitb:description>This scenario will validate the secure remote presentation of a PID verifiable credential from a digital wallet to a verifier, using the OpenID for Verifiable Presentations (OID4VP) 1.0 protocol.</gitb:description>
         <gitb:version>1.0</gitb:version>
     </metadata>
 	<!-- 

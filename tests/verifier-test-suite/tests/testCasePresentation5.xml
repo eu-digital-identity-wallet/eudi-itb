@@ -3,7 +3,32 @@
     <metadata>
         <gitb:name>Remote presentation of a document with its bit set on the status list</gitb:name>
         <gitb:version>1.0</gitb:version>
-        <gitb:description>Remote presentation of a document with its bit set on the status list</gitb:description>
+        <gitb:description>This test case verifies that the remote reader warns the user when the bit of the MSO of a document is set on the status list</gitb:description>
+        <gitb:specification>
+            <gitb:reference>Remote_Presentation_9</gitb:reference>
+        </gitb:specification>
+        <gitb:documentation><![CDATA[
+            <h4>Preconditions</h4>
+            <ol style="list-style-type: lower-alpha;">
+            <li>The user of the remote reader has shared its url to&nbsp;the wallet user</li>
+            <li>The wallet has any valid document; however, its bit&nbsp;is set on the status list that is referenced in the&nbsp;document.</li>
+            <li>The remote reader trusts the IACA certificate used&nbsp;in the issuer data authentication</li>
+            </ol>
+            <h4>Test steps</h4>
+            <ol>
+            <li>The wallet user navigates to the url of the remote&nbsp;reader</li>
+            <li>The wallet user clicks on a link/scans a QR code to&nbsp;start reading the document (DCQL)</li>
+            <li>The wallet user gives permission to share the&nbsp;document</li>
+            <li>The remote reader is verified</li>
+            </ol>
+            <h4>Expected results</h4>
+            <ol>
+            <li>The website of the remote reader opens</li>
+            <li>The wallet opens and permission of the wallet user is&nbsp;requested</li>
+            <li>The document is sent to the remote reader</li>
+            <li>The reader warns that the document is set on the status list. The test passes whether the document data is shown or not.</li>
+            </ol>
+        ]]></gitb:documentation>
     </metadata>
     <actors>
         <gitb:actor id="verifier" name="Verifier" />

@@ -3,7 +3,32 @@
     <metadata>
         <gitb:name>Presentation of PID in sd-jwt format using HAIP via Redirect</gitb:name>
         <gitb:version>1.0</gitb:version>
-        <gitb:description> Presentation of PID in sd-jwt format using HAIP via Redirect</gitb:description>
+        <gitb:description>This test case verifies that it is possible to present a PID in sd-jwt format using HAIP via Redirects</gitb:description>
+        <gitb:specification>
+            <gitb:reference>Remote_Presentation_1</gitb:reference>
+        </gitb:specification>
+        <gitb:documentation><![CDATA[
+            <h4>Preconditions</h4>
+            <ol style="list-style-type: lower-alpha;">
+            <li>The user of the remote reader has shared its url to&nbsp;the wallet user</li>
+            <li>The wallet has a PID in sd-jwt format</li>
+            <li>The remote reader trusts the IACA certificate used&nbsp;in the issuer data authentication</li>
+            </ol>
+            <h4>Test steps</h4>
+            <ol>
+            <li>The wallet user navigates to the url of the remote&nbsp;reader</li>
+            <li>The wallet user clicks on a link/scans a QR code to&nbsp;start reading the PID (DCQL)</li>
+            <li>The wallet user gives permission to share the PID</li>
+            <li>The remote reader is verified</li>
+            </ol>
+            <h4>Expected results</h4>
+            <ol>
+            <li>The website of the remote reader opens</li>
+            <li>The wallet opens and permission of the wallet user&nbsp;is requested</li>
+            <li>The PID is sent to the remote reader</li>
+            <li>The PID data is shown in the reader</li>
+            </ol>
+        ]]></gitb:documentation>
     </metadata>
     <actors>
         <gitb:actor id="verifier" name="Verifier" />

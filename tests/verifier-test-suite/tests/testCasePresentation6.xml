@@ -3,7 +3,29 @@
     <metadata>
         <gitb:name>Remote presentation with mdoc authentication and a not trusted IACA Certificate</gitb:name>
         <gitb:version>1.0</gitb:version>
-        <gitb:description>Remote presentation with mdoc authentication and a not trusted IACA Certificate</gitb:description>
+        <gitb:description>This test case verifies that a remote reader warns the user when a IACA Certificate is not trusted</gitb:description>
+        <gitb:specification>
+            <gitb:reference>Remote_Presentation_7</gitb:reference>
+        </gitb:specification>
+        <gitb:documentation><![CDATA[
+            <h4>Preconditions</h4>
+            <ol style="list-style-type: lower-alpha;">
+            <li>The user of the remote reader has shared its url to&nbsp;the wallet user</li>
+            <li>The wallet has any document signed by a&nbsp;Document Signer Certificate that is issued by an&nbsp;IACA Certificate that is not on the ETSI trusted&nbsp;certificate list</li>
+            </ol>
+            <h4>Test steps</h4>
+            <ol>
+            <li>The wallet user navigates to the url of the remote&nbsp;reader</li>
+            <li>The wallet user clicks on a link/scans a QR code to&nbsp;start reading its documents (DCQL)</li>
+            <li>The wallet user gives permission to share the&nbsp;document</li>
+            <li>The remote reader is verified</li>
+            </ol>
+            <h4>Expected results</h4>
+            <ol>
+            <li>The website of the remote reader opens</li>
+            <li>The wallet opens and the wallet user is warned that the reader is not trusted. The test case passes either when the process is stopped here or when the user may decide to go on sharing their document</li>
+            </ol>
+        ]]></gitb:documentation>
     </metadata>
     <actors>
         <gitb:actor id="verifier" name="Verifier" />
