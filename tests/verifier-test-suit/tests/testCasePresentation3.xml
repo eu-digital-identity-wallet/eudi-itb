@@ -51,7 +51,7 @@
 
         <interact inputTitle="Scan the QR Code" desc="Scan the QR Code with your wallet." with="wallet">
             <instruct desc="Click on the magnifying glass to display the QR code"/>
-            <instruct desc="QR code to scan" mimeType="image/png">$dataReceived{response}{body}</instruct>
+            <instruct desc="Scan this QR with your wallet" mimeType="image/png">$dataReceived{response}{body}</instruct>
             <instruct desc="After you present the credential on your wallet, click on the Close button to continue"/>
         </interact>
 
@@ -76,16 +76,16 @@
         <log>$transaction_url</log>
         <log>$transaction_logs_url</log>
 
-        <while title="HTTP Call Loop to verifier" desc="Make HTTP calls until attempts run out or status 200">
+        <while title="Transaction logs polling" desc="Polling transaction logs from Verifier until success or timeout">
             <cond><![CDATA[$attempt <= $maxAttempts and $responseStatus != '200']]></cond>
             <do>
-                <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
-                <send id="httpRequestPool" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier">
+                <log>"Polling transaction logs (attempt " || $attempt || ")..."</log>
+                <send id="httpRequestPoll" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier">
                     <input name="uri">$transaction_url</input>
                     <input name="method">"GET"</input>
                 </send>
-                <log>"Request status: "|| $httpRequestPool{response}{status}</log>
-                <assign to="responseStatus" source="$httpRequestPool{response}{status}"/>
+                <log>"Request status: "|| $httpRequestPoll{response}{status}</log>
+                <assign to="responseStatus" source="$httpRequestPoll{response}{status}"/>
                 <assign to="attempt" type="number">$attempt + 1</assign>
                 <process handler="DelayProcessor" operation="delay" input="$DOMAIN{delayBetweenCalls}"/>
             </do>
