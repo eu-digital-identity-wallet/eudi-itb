@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testcase id="testCase1_credentialOffer_pid_mdoc" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
+<testcase id="testCase2_credentialOffer_pid_sdjwt" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
     <metadata>
-        <gitb:name>[TC1] Credential Offer - PID Issuance in mDoc Format</gitb:name>
+        <gitb:name>[TC2] Credential Offer - PID Issuance in SD-JWT Format</gitb:name>
         <gitb:version>1.0</gitb:version>
-        <gitb:description>Test case for PID Issuance in mDoc Format via the Credential Offer Endpoint.</gitb:description>
+        <gitb:description>Test case for PID Issuance in SD-JWT Format via the Credential Offer Endpoint.</gitb:description>
     </metadata>
     <actors>
         <gitb:actor id="simulatedCredentialOffer" name="Simulated Credential Offer" />
@@ -11,12 +11,12 @@
         <gitb:actor id="wallet" name="Wallet" role="SUT"/>
     </actors>
     <steps stopOnError="true">
-        <log>"PID Issuance in mDoc Format at: " || $DOMAIN{issuerAddress} || "/credential_offer2?credential_configuration_id=eu.europa.ec.eudi.pid_mdoc"</log>
+        <log>"PID Issuance in SD-JWT Format at: " || $DOMAIN{issuerAddress} || "/credential_offer2?credential_configuration_id=eu.europa.ec.eudi.pid_vc_sd_jwt"</log>
         
         <!--Making an HTTP Request to the Issuer's Credential Offer Endpoint -->
         <assign to="httpHeaders{Content-Type}">"application/json"</assign>
-        <send id="credentialOffer" desc="Send PID issuance (mDoc) request to Credential Offer" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
-            <input name="uri">$DOMAIN{issuerAddress} || "/credential_offer2?credential_configuration_id=eu.europa.ec.eudi.pid_mdoc"</input>
+        <send id="credentialOffer" desc="Send PID issuance (SD-JWT) request to Credential Offer" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
+            <input name="uri">$DOMAIN{issuerAddress} || "/credential_offer2?credential_configuration_id=eu.europa.ec.eudi.pid_vc_sd_jwt"</input>
             <input name="method">"GET"</input>
             <input name="headers">$httpHeaders</input>
         </send>
@@ -35,7 +35,7 @@
            <input name="expression">"$.session_id"</input>
            <input name="outputType">"default"</input>
         </process>
-        <log>"sessionID from Credential Offer response:" || $sessionID</log>
+        <log> "sessionID from Credential Offer response:" || $sessionID</log>
         <process handler="JsonPathProcessor" operation="process" output="base64Img"> <!--Extract base64_img from response-->
            <input name="content">$credentialOfferResponse</input>
            <input name="expression">"$.base64_img"</input>
