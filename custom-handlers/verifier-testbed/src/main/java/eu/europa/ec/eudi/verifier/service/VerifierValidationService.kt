@@ -74,36 +74,30 @@ class VerifierValidationService(
         val successCheck = providedLogs.events.filterIsInstance<VerifierGotWalletResponse>().isNotEmpty()
 
         val warnings =
-            providedLogs.events.mapNotNull { event ->
-                when (event) {
-                    is AttestationStatusCheckFailed -> mapOf("event" to event.event, "cause" to event.cause)
-                    is WalletFailedToPostResponse -> mapOf("event" to event.event, "cause" to event.cause)
-                    is FailedToRetrievePresentationDefinition -> mapOf("event" to event.event, "cause" to event.cause)
-                    is FailedToRetrieveRequestObject -> mapOf("event" to event.event, "cause" to event.cause)
-                    is PresentationExpired -> mapOf("event" to "Presentation expired", "cause" to "Presentation expired")
-                    is VerifierFailedToGetWalletResponse -> mapOf("event" to event.event, "cause" to event.cause)
+            providedLogs.events.mapNotNull {
+                when (it) {
+                    is AttestationStatusCheckFailed -> it.event to it.cause
+                    is WalletFailedToPostResponse -> it.event to it.cause
+                    is FailedToRetrievePresentationDefinition -> it.event to it.cause
+                    is FailedToRetrieveRequestObject -> it.event to it.cause
+                    is PresentationExpired -> it.event to it.actor
+                    is VerifierFailedToGetWalletResponse -> it.event to it.cause
                     else -> null
                 }
-            }.distinct()
-
+            }.toMap()
         // Those are the only non-recoverable error that can occur/care about
         val nonRecoverableErrors =
             when (expectError) {
                 "attestation_error" ->
-                    if (!warnings.find { it["event"] == "Attestation status check failed" }.isNullOrEmpty()) {
-                        null
-                    } else {
+                    if (warnings["Attestation status check failed"] == null)
                         "Attestation step should fail to post response but did anyways or/and other error occurred"
-                    }
-                "certificate_error" -> {
-                    if (!warnings.find { it["event"] == "Wallet failed to post response" }.isNullOrEmpty()) {
-                        null
-                    } else {
+                    else null
+                "certificate_error" ->
+                    if (warnings["Wallet failed to post response"] == null)
                         "Wallet should fail to post response but did anyways or/and other error occurred"
-                    }
-                }
+                     else null
                 else ->
-                    if ((verifierQuery == walletQuery) && successCheck) {
+                    if (verifierQuery == walletQuery && successCheck) {
                         null
                     } else {
                         "Wallet query and verifier query do not match"
@@ -133,7 +127,7 @@ class VerifierValidationService(
                 counters.nrOfErrors = 1.toBigInteger()
             }
             if (warnings.isNotEmpty()) {
-                context.item.add(warnings.map { it["cause"] }.toStrings().toContent("Validation warnings", "text/plain"))
+                context.item.add(warnings.values.distinct().toStrings().toContent("Validation warnings", "text/plain"))
             }
             counters.nrOfWarnings = warnings.size.toBigInteger()
         }
@@ -141,7 +135,7 @@ class VerifierValidationService(
         return ValidationResponse().apply { this.report = report }
     }
 
-    private fun List<String?>.toStrings(): String = this.joinToString(" " + System.lineSeparator() + " ")
+    private fun List<String?>.toStrings(): String = this.joinToString()
 
     private fun Any.toContent(
         name: String,
