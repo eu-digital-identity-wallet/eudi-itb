@@ -11,25 +11,37 @@
         <gitb:actor id="wallet" name="Wallet" role="SUT"/>
     </actors>
     <steps>
-        <log>"mDL Issuance in mDoc Format at: " || $DOMAIN{issuerAddress} || "/credential_offer2?credential_configuration_id=eu.europa.ec.eudi.mdl_mdoc"</log>
+        <verify stopOnError="true" id="checkStatusCode" handler="ExpressionValidator" desc="Validate Credential Offer URL" >
+            <input name="expression">$DOMAIN{credentialOfferURL} != ""</input>
+            <input name="successMessage">"The Credential Offer URL is defined."</input>
+            <input name="failureMessage">"The Credential Offer URL is not defined."</input>
+        </verify>
+        <verify stopOnError="true" id="checkStatusCode" handler="ExpressionValidator" desc="Validate Credential Offer Logs URL" >
+            <input name="expression">$DOMAIN{logsURL} != ""</input>
+            <input name="successMessage">"The Credential Offer Logs URL is defined."</input>
+            <input name="failureMessage">"The Credential Offer Logs URL is not defined."</input>
+        </verify>
+
+        <log>"mDL Issuance in mDoc Format at: " || $DOMAIN{credentialOfferURL} || "?credential_configuration_id=eu.europa.ec.eudi.mdl_mdoc"</log>
         
         <!--Making an HTTP Request to the Issuer's Credential Offer Endpoint -->
         <assign to="httpHeaders{Content-Type}">"application/json"</assign>
-        <send stopOnError="true" id="credentialOffer" desc="Send mDL issuance (mDoc) request to Credential Offer" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
-            <input name="uri">$DOMAIN{issuerAddress} || "/credential_offer2?credential_configuration_id=eu.europa.ec.eudi.mdl_mdoc"</input>
+        <send stopOnError="true" id="credentialOfferRequest" desc="Send mDL issuance (mDoc) request to Credential Offer" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
+            <input name="uri">$DOMAIN{credentialOfferURL}  || "?credential_configuration_id=eu.europa.ec.eudi.mdl_mdoc"</input>
             <input name="method">"GET"</input>
             <input name="headers">$httpHeaders</input>
         </send>
         <verify stopOnError="true" id="checkStatusCode" handler="StringValidator" desc="Validate Credential Offer Response HTTP status">
-            <input name="actual">$credentialOffer{response}{status}</input>
+            <input name="actual">$credentialOfferRequest{response}{status}</input>
             <input name="expected">"200"</input>
-            <input name="failureMessage">"The received HTTP status was not 200."</input>
+            <input name="successMessage">"The received Credential Offer HTTP status was 200."</input>
+            <input name="failureMessage">"The received Credential Offer HTTP status was not 200."</input>
         </verify>
-        <log>"Credential Offer endpoint response status:" || $credentialOffer{response}{status}</log>
-        <log>"Credential Offer endpoint response body:" || $credentialOffer{response}{body}</log>
+        <log>"Credential Offer endpoint response status:" || $credentialOfferRequest{response}{status}</log>
+        <log>"Credential Offer endpoint response body:" || $credentialOfferRequest{response}{body}</log>
 
         <!--Retrieve Data from Credential Offer Response-->
-        <assign to="credentialOfferResponse" source="$credentialOffer{response}{body}" type="string"/> <!--Covert binary to string-->
+        <assign to="credentialOfferResponse" source="$credentialOfferRequest{response}{body}" type="string"/> <!--Covert binary to string-->
         <process stopOnError="true" handler="JsonPathProcessor" operation="process" output="sessionID"> <!--Extract session_id from response-->
            <input name="content">$credentialOfferResponse</input>
            <input name="expression">"$.session_id"</input>
@@ -54,18 +66,18 @@
         </interact>
 
         <!--Making an HTTP Request to the Issuer to retrieve sessionID logs to check Credential Offer success-->
-        <log>"Retrieving logs at: " || $DOMAIN{issuerAddress} || "/logs?session_id=" || $sessionID</log>
+        <log>"Retrieving logs at: " || $DOMAIN{logsURL} || "?session_id=" || $sessionID</log>
         <assign to="attempt" type="number">1</assign>
-        <assign to="maxAttempts" type="number">20</assign>
+        <assign to="maxAttempts" type="number">$DOMAIN{maxAttempts}</assign>
         <assign to="successful">false</assign>
         <assign to="success">"false"</assign>
         <assign to="logsResponse">'none'</assign>
-        <while stopOnError="true" title="HTTP Call Loop to the Issuer" desc="Make HTTP calls until 20 attempts or until successful Credential Offer is detected">
+        <while stopOnError="true" title="HTTP Call Loop to the Issuer" desc="Make HTTP calls until successful Credential Offer or timeout">
             <cond><![CDATA[$attempt <= $maxAttempts and $success != "true"]]></cond>
             <do>
                 <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
                 <send id="sessionIdLogs" desc="Retrieve logs to check Credential Offer success" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
-                    <input name="uri">$DOMAIN{issuerAddress} || "/logs?session_id=" || $sessionID</input>
+                    <input name="uri">$DOMAIN{logsURL} || "?session_id=" || $sessionID</input>
                     <input name="method">"GET"</input>
                     <input name="headers">$httpHeaders</input>
                 </send>
@@ -78,7 +90,7 @@
                 <log>"Was Credential Offer successful? " || $successful</log>
                 <assign to="success" type="string">$successful</assign>
                 <assign to="attempt" type="number">$attempt + 1</assign>
-                <process handler="DelayProcessor" operation="delay" input="5000"/> <!-- 5-second delay -->
+                <process handler="DelayProcessor" operation="delay" input="$DOMAIN{delayBetweenCalls}"/> <!-- 5-second delay -->
             </do>
         </while>
         
@@ -102,18 +114,12 @@
             <input name="content">$logsResponse</input>
             <input name="pointer">"/logs"</input>
         </process>
-        <log>$logs</log>
+        <log>"Logs: " || $logs</log>
 
-        <verify stopOnError="false" id="checkSuccessful" handler="StringValidator" desc="Validate the 'successful' value in the logs response">
-            <input name="actual">$successful</input>
-            <input name="expected">"true"</input>
-            <input name="failureMessage">"The Credential Offer was not successful."</input>
-        </verify>
         <log>"Credential Offer was successful? " || $successful</log>
-
-        <interact stopOnError="true" inputTitle="Issuer's Credential Offer Logs" desc="Inspect Issuer's Credential Offer logs">
-            <instruct desc="Download Credential Offer Logs" mimeType="application/json">$logs</instruct>
-        </interact>
+        <verify id="checkLogsAndSuccessfulValue" handler="$DOMAIN{issuerValidationService}" desc="Validate the 'successful' value and logs from the issuer logs response" >
+            <input name="text">$logsResponse</input>
+        </verify>
     </steps>
     <output>
         <success>
