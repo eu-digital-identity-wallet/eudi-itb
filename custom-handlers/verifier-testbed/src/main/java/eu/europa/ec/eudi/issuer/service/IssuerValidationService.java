@@ -143,11 +143,11 @@ public class IssuerValidationService implements ValidationService {
         logAsJSON.put("timestamp", m.group(1));
         logAsJSON.put("logger", m.group(2));
         logAsJSON.put("level", m.group(3));
-		  switch (m.group(3)) {
-			  case "INFO" -> info_counter_logs++;
-			  case "WARN" -> warn_counter_logs++;
-			  case "ERROR" -> error_counter_logs++;
-		  }
+        switch (m.group(3)) {
+          case "INFO" -> info_counter_logs++;
+          case "WARN" -> warn_counter_logs++;
+          case "ERROR" -> error_counter_logs++;
+        }
         logAsJSON.put("message", m.group(4));
         logAsJSON.put("full_log", logLine);
         json.add(logAsJSON);
