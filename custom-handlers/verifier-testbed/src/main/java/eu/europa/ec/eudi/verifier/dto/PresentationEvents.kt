@@ -42,6 +42,7 @@ data class PresentationEventsTO(
     JsonSubTypes.Type(value = PresentationExpired::class, name = "Presentation expired"),
     JsonSubTypes.Type(value = AttestationStatusCheckSuccessful::class, name = "Attestation status check succeeded"),
     JsonSubTypes.Type(value = AttestationStatusCheckFailed::class, name = "Attestation status check failed"),
+    JsonSubTypes.Type(value = DCApiTransactionInitialized::class, name = "DC Api Transaction initialized"),
 )
 sealed interface PresentationEvent {
     val timestamp: String
@@ -128,6 +129,14 @@ data class AttestationStatusCheckFailed(
     @JsonProperty("status_reference")
     val statusReference: JsonNode?,
     val cause: String?,
+    override val event: String,
+    override val actor: String,
+) : PresentationEvent
+
+data class DCApiTransactionInitialized(
+    override val timestamp: String,
+    val response: String,
+    val profile: String,
     override val event: String,
     override val actor: String,
 ) : PresentationEvent
