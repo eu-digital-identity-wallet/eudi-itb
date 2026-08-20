@@ -44,7 +44,7 @@
         <assign to="httpHeaders{Content-Type}">"application/json"</assign>
         <assign to="httpHeaders{Accept}">"image/png"</assign>
         <send id="dataReceived" desc="Send valid presentation request" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier">
-            <input name="uri">$DOMAIN{endpointAddress} || "/ui/presentations/v2"</input>
+            <input name="uri">$DOMAIN{verifierBackendAddress} || "/ui/presentations/v2"</input>
             <input name="method">"POST"</input>
             <input name="body">'{"type":"vp_token","dcql_query":{"credentials":[{"id":"query_0","format":"dc+sd-jwt","meta":{"vct_values":["urn:eudi:pid:1"]}}]},"nonce":"'|| $nonce || '","request_uri_method":"get","authorization_request_uri": "'|| $authReqUri{uri} ||'"}'</input>
             <input name="headers">$httpHeaders</input>
@@ -87,7 +87,7 @@
         <assign to="attempt" type="number">1</assign>
         <assign to="maxAttempts" type="number">$DOMAIN{maxAttempts}</assign>
         <assign to="responseStatus">'404'</assign>
-        <assign to="transaction_url">$DOMAIN{endpointAddress} || "/ui/presentations/" || $transactionId</assign>
+        <assign to="transaction_url">$DOMAIN{verifierBackendAddress} || "/ui/presentations/" || $transactionId</assign>
         <assign to="transaction_logs_url">$transaction_url || "/events"</assign>
         <log>$transaction_url</log>
         <log>$transaction_logs_url</log>
