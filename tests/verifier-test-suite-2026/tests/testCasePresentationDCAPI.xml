@@ -63,7 +63,7 @@
         </process>
 
         <interact inputTitle="Resolve DC API request" desc="Resolve the DC API request with EUDIW Verifier in order to proceed." with="wallet">
-            <instruct desc="DC API Request URL:"> $verifier_frontend_initialize_dcapi || $transactionIdTest</instruct>
+            <instruct desc="Open the dialog box to display the DC API request URL"> $verifier_frontend_initialize_dcapi || $transactionIdTest</instruct>
             <instruct desc="After you present the credential on your wallet, click on the Close button to continue"/>
         </interact>
 
