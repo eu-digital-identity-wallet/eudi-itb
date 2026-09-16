@@ -39,7 +39,7 @@
         <send id="dataReceived" desc="Send valid presentation request" handler="HttpMessagingV2" from="simulatedInitTransaction" to="verifier" txnId="t1">
             <input name="uri">$initialize_dc_api_transaction_url</input>
             <input name="method">"POST"</input>
-            <input name="body">'{"dcql_query":'||$dcql_query||',"nonce":"'|| $nonce || '","origin":"'||$verifier_frontend ||'","expected_origins":["'||$verifier_frontend ||'"],"intended_use_id":"TEST-01", "registration_certificate": "'||$missmatched_verifier_registration_certificate||'"}'</input>
+            <input name="body">'{"dcql_query":'||$dcql_query||',"nonce":"'|| $nonce || '","origin":"'||$verifier_frontend ||'","expected_origins":["'||$verifier_frontend ||'"], "registration_certificate": "'||$missmatched_verifier_registration_certificate||'"}'</input>
             <input name="headers">$httpHeaders</input>
         </send>
 
