@@ -111,7 +111,14 @@ class VerifierValidationService(
                     null
                 }
             "access_certificate_error" -> {
-                if ((warningsMap["Verifier failed to get wallet"] == null) || ((events.find { it is RequestObjectRetrieved } == null) && (events.find { it is VerifierGotWalletResponse } != null))) {
+                if ((warningsMap["Verifier failed to get wallet"] == null) || (
+                        (
+                            events.find {
+                                it is RequestObjectRetrieved
+                            } == null
+                        ) && (events.find { it is VerifierGotWalletResponse } != null)
+                    )
+                ) {
                     "Wallet should fail to post response since access certificate is invalid but did not"
                 } else {
                     null
