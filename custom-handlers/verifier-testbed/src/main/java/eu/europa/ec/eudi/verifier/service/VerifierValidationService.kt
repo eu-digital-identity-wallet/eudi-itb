@@ -32,6 +32,7 @@ import eu.europa.ec.eudi.verifier.dto.FailedToRetrieveRequestObject
 import eu.europa.ec.eudi.verifier.dto.PresentationEvent
 import eu.europa.ec.eudi.verifier.dto.PresentationEventsTO
 import eu.europa.ec.eudi.verifier.dto.PresentationExpired
+import eu.europa.ec.eudi.verifier.dto.RequestObjectRetrieved
 import eu.europa.ec.eudi.verifier.dto.ValidationWarnings
 import eu.europa.ec.eudi.verifier.dto.VerifierFailedToGetWalletResponse
 import eu.europa.ec.eudi.verifier.dto.VerifierGotWalletResponse
@@ -109,6 +110,13 @@ class VerifierValidationService(
                 } else {
                     null
                 }
+            "access_certificate_error" -> {
+                if ((warningsMap["Verifier failed to get wallet"] == null) || ((events.find { it is RequestObjectRetrieved } == null) && (events.find { it is VerifierGotWalletResponse } != null))) {
+                    "Wallet should fail to post response since access certificate is invalid but did not"
+                } else {
+                    null
+                }
+            }
             else -> {
                 val verifierWalletResponseEvent = events.filterIsInstance<VerifierGotWalletResponse>().firstOrNull()
                 val walletResponseEvent = events.filterIsInstance<WalletResponsePosted>().firstOrNull()

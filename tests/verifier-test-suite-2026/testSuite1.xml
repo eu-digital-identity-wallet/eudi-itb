@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite id="verificationTestDCAPI" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
+<testsuite id="verificationTestSuite" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
     <metadata>
-        <gitb:name>Remote Presentation of PID with DC API</gitb:name>
+        <gitb:name>Remote Presentation</gitb:name>
         <gitb:description>This scenario will validate the secure remote presentation of a PID verifiable credential from a digital wallet to a verifier, using the OpenID for Verifiable Presentations (OID4VP) 1.0 protocol.</gitb:description>
         <gitb:version>1.0</gitb:version>
     </metadata>
@@ -29,5 +29,18 @@
 		The list of included test cases (referenced using their ID). The ordering of the test cases here defines their execution
 		order when running the test suite.
 	-->
+    <testcase id="verify_pid_qr_from_verifier"/>
     <testcase id="verify_dc_api_pid_presentation"/>
+    <testcase id="verify_pid_mdoc_qr_from_verifier"/>
+    <testcase id="verify_dc_api_pid_mdoc_presentation"/>
+    <testcase id="verify_mdl_qr_from_verifier"/>
+    <testcase id="verify_dc_api_mdoc_presentation"/>
+    <testcase id="verify_pid_qr_from_verifier_invalid_access_certificate"/>
+    <testcase id="verify_dc_api_pid_verifier_invalid_access_certificate"/>
+    <testcase id="verify_pid_qr_from_verifier_untrusted_verifier_registration_cert"/>
+    <testcase id="verify_dc_api_pid_presentation_untrusted_registration_certificate"/>
+    <testcase id="verify_pid_qr_from_verifier_missmatched_verifier_access_reg_cert"/>
+    <testcase id="verify_dc_api_pid_from_verifier_missmatched_verifier_access_reg_cert"/>
+    <testcase id="verify_pid_qr_from_verifier_with_over_asking_certificate"/>
+    <testcase id="verify_pid_dc_api_from_verifier_with_over_asking_certificate"/>
 </testsuite>
