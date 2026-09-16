@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testcase id="verify_dc_api_pid_from_verifier_missmatched_verifier_access_reg_cert" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
     <metadata>
-        <gitb:name>Presentation of PID in sd-jwt format using OpenID4VP Digital Credentials API flow</gitb:name>
+        <gitb:name>Presentation of PID in sd-jwt format using OpenID4VP Digital Credentials API flow with mismatched Verifier access and registration certificates</gitb:name>
         <gitb:version>1.0</gitb:version>
         <gitb:description>This test case verifies that it is possible to present a PID in sd-jwt format using DC API</gitb:description>
         <gitb:specification>
