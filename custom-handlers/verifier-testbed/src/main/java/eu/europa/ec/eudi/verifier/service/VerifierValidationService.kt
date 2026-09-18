@@ -125,6 +125,13 @@ class VerifierValidationService(
                     null
                 }
             }
+            "access_certificate_error_dc_api" -> {
+                if (events.any { it is VerifierGotWalletResponse }) {
+                    "Wallet should fail to post response since access certificate is invalid but did not"
+                } else {
+                    null
+                }
+            }
             else -> {
                 val verifierWalletResponseEvent = events.filterIsInstance<VerifierGotWalletResponse>().firstOrNull()
                 val walletResponseEvent = events.filterIsInstance<WalletResponsePosted>().firstOrNull()
