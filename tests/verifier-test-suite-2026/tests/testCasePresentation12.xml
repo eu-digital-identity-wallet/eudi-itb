@@ -263,9 +263,9 @@
         </verify>
 
         <interact id="review" desc="Confirm response">
-            <instruct desc="Did wallet showed a warning regarding untrusted Verifier registration certificate?"></instruct>
+            <instruct desc="Did wallet showed a warning regarding mismatched access and registration certificates?"></instruct>
             <request
-                    desc="Did wallet showed a warning regarding untrusted Verifier registration certificate?"
+                    desc="Did wallet showed a warning regarding mismatched access and registration certificates?"
                     name="outcome"
                     inputType="SELECT_SINGLE"
                     options="Yes,No"
