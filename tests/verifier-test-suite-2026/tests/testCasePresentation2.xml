@@ -5,7 +5,7 @@
         <gitb:version>1.0</gitb:version>
         <gitb:description>This test case verifies that it is possible to present a PID in sd-jwt format using OpenID4VP via W3C Digital Credentials API </gitb:description>
         <gitb:specification>
-            <gitb:reference>Remote_Presentation_2</gitb:reference>
+            <gitb:reference>PRE-02</gitb:reference>
         </gitb:specification>
         <gitb:documentation><![CDATA[
             <table class="MsoTableGrid" style="border-collapse: collapse; border: none; mso-border-alt: solid windowtext .5pt; mso-yfti-tbllook: 1184; mso-padding-alt: 0cm 5.4pt 0cm 5.4pt;" border="1" cellspacing="0" cellpadding="0">
