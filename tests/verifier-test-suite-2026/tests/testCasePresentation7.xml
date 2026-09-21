@@ -3,32 +3,30 @@
     <metadata>
         <gitb:name>Presentation of PID in sd-jwt format using OpenID4VP redirect-based flow with an untrusted access certificate</gitb:name>
         <gitb:version>1.0</gitb:version>
-        <gitb:description>This test case verifies that it is possible to present a PID in sd-jwt format using HAIP via Redirects</gitb:description>
+        <gitb:description>This test case verifies that the wallet rejects the presentation of a PID to an untrusted remote verifier</gitb:description>
         <gitb:specification>
             <gitb:reference>Remote_Presentation_7</gitb:reference>
         </gitb:specification>
         <gitb:documentation><![CDATA[
-           <h2>NEEDS UPDATE!</h2>
-            <h4>Preconditions</h4>
+           <h4>Preconditions</h4>
             <ol style="list-style-type: lower-alpha;">
-            <li>The user of the remote reader has shared its url to&nbsp;the wallet user</li>
-            <li>The wallet has a PID in sd-jwt format</li>
-            <li>The remote reader trusts the IACA certificate used&nbsp;in the issuer data authentication</li>
+            <li>The user has a valid PID in sd-jwt format in their wallet</li>
+            <li>The remote reader trusts the IACA certificate used to sign the PID</li>
+            <li>The wallet does not trust the remote reader's access certificate</li>
             </ol>
             <h4>Test steps</h4>
             <ol>
-            <li>The wallet user navigates to the url of the remote&nbsp;reader</li>
-            <li>The wallet user clicks on a link/scans a QR code to&nbsp;start reading the PID (DCQL)</li>
-            <li>The wallet user gives permission to share the PID</li>
-            <li>The remote reader is verified</li>
+            <li>The wallet user starts the test case in ITB</li>
+            <li>The wallet user scans the QR code with their wallet</li>
+            <li>ITB records the test execution result</li>
             </ol>
             <h4>Expected results</h4>
             <ol>
-            <li>The website of the remote reader opens</li>
-            <li>The wallet opens and permission of the wallet user&nbsp;is requested</li>
-            <li>The PID is sent to the remote reader</li>
-            <li>The PID data is shown in the reader</li>
+            <li>ITB displays a popup with a QR code containing the presentation request</li>
+            <li>The wallet rejects the presentation request</li>
+            <li>The test execution result appears on the ITB screen</li>
             </ol>
+             P2P test case ID: Remote_Presentation_13
         ]]></gitb:documentation>
     </metadata>
     <actors>
