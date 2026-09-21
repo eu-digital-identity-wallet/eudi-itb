@@ -48,10 +48,7 @@ public class IssuerValidationService implements ValidationService {
 
   @Override
   public ValidationResponse validate(ValidateRequest parameters) {
-    log.info(
-        "Received 'validate' command from test bed for session [{}]", parameters.getSessionId());
-
-    TAR report = utils.createReport(TestResultType.SUCCESS);
+    log.info("Received 'validate' command from test bed for session [{}]", parameters.getSessionId());
 
     String providedText = utils.getRequiredString(parameters.getInput(), "text");
     log.info("Retrieved issuer's logs from 'input' text.");
@@ -75,10 +72,11 @@ public class IssuerValidationService implements ValidationService {
       throw new RuntimeException(e);
     }
 
+    TAR report;
     if (providedLogs.getSuccessful()) {
-      report.setResult(TestResultType.SUCCESS);
+      report = utils.createReport(TestResultType.SUCCESS);
     } else {
-      report.setResult(TestResultType.FAILURE);
+      report = utils.createReport(TestResultType.FAILURE);
     }
     log.info("Added test result type to Report.");
 
