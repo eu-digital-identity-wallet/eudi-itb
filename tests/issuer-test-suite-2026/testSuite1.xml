@@ -28,10 +28,8 @@
     <testcase id="issue_pid_mdoc_credentialoffer_untrusted_certificate"/>
     <testcase id="issue_pid_sdjwt_credentialoffer_invalid_credential"/>
     <testcase id="issue_pid_mdoc_credentialoffer_invalid_credential"/>
-
     <testcase id="issue_pid_sdjwt_credentialoffer_untrusted_access_certificate"/>
     <testcase id="issue_pid_mdoc_credentialoffer_untrusted_access_certificate"/>
-
     <testcase id="issue_pid_sdjwt_credentialoffer_revocation"/>
     <testcase id="issue_pid_mdoc_credentialoffer_revocation"/>
     <testcase id="issue_pid_sdjwt_credentialoffer_invalid_metadata"/>

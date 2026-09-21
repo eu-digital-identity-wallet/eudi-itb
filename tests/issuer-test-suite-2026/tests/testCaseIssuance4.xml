@@ -7,7 +7,28 @@
         <gitb:specification>
             <gitb:reference>Issuance_4</gitb:reference>
         </gitb:specification>
-        <gitb:documentation>TBD</gitb:documentation>
+        <gitb:documentation><![CDATA[
+            <h4>Preconditions</h4>
+            <ol style="list-style-type: lower-alpha;">
+            <li>The wallet trusts the credential issuer’s signing certificate</li>
+            <li>The wallet trusts the issuer of the credential issuer’s access certificate</li>
+            <li>The wallet trusts the issuer of the credential issuer’s registration certificate</li>
+            </ol>
+            <h4>Test steps</h4>
+            <ol>
+            <li>The user starts the test case in ITB</li>
+            <li>The user scans the QR code with their wallet</li>
+            <li>The user completes the issuance process</li>
+            <li>ITB records the test execution result</li>
+            </ol>
+            <h4>Expected results</h4>
+            <ol>
+            <li>ITB displays a popup with a QR code containing the credential offer</li>
+            <li>The website of the issuer opens</li>
+            <li>The credential appears in the user’s wallet</li>
+            <li>The test execution result appears on the ITB screen</li>
+            </ol>
+        ]]></gitb:documentation>
     </metadata>
     <actors>
         <gitb:actor id="simulatedCredentialOffer" name="Simulated Credential Offer"/>
@@ -30,7 +51,7 @@
         
         <!--Making an HTTP Request to the Issuer's Credential Offer Endpoint -->
         <assign to="httpHeaders{Content-Type}">"application/json"</assign>
-        <send id="credentialOfferRequest" desc="Send request to generate Credential Offer for PID issuance (SD-JWT)" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer" stopOnError="true">
+        <send id="credentialOfferRequest" desc="Send request to generate Credential Offer for PID issuance (SD-JWT and Mdoc)" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer" stopOnError="true">
             <input name="uri">$credentialOfferSetupURL || "?credential_configuration_id=" || $credentialConfigurationId || "&amp;credential_configuration_id=" || $secondCredentialConfigurationId</input>
             <input name="method">"GET"</input>
             <input name="headers">$httpHeaders</input>
@@ -64,7 +85,7 @@
         <interact inputTitle="Scan the QR Code" desc="Scan the QR Code with your wallet." with="wallet" stopOnError="true" >
             <instruct desc="Click on the magnifying glass to display the QR code"/>
             <instruct desc="Scan this QR with your wallet" mimeType="image/png">$qrCodeImg</instruct> <!--contentType="BASE64" -->
-            <instruct desc="After issuing the PID in your wallet, click on the Close button to continue"/>
+            <instruct desc="After issuing PIDs in your wallet, click on the Close button to continue"/>
         </interact>
 
         <!--Making an HTTP Request to the Issuer to retrieve sessionID logs to check Credential Offer success-->
@@ -101,6 +122,12 @@
             <input name="expression">$logsRequest{response}{status} = "200"</input>
             <input name="successMessage">"The received http status code was 200."</input>
             <input name="failureMessage">"The received http status code was not 200."</input>
+        </verify>
+
+        <verify handler="ExpressionValidator" desc="Verify success of the credential issuance from logs response" stopOnError="true">
+            <input name="expression">$successful = "true"</input>
+            <input name="successMessage">"Credential Issuance was successful."</input>
+            <input name="failureMessage">"Credential Issuance failed."</input>
         </verify>
 
         <!--Process Logs response-->

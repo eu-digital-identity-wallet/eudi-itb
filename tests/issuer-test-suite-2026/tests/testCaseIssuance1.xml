@@ -7,7 +7,28 @@
         <gitb:specification>
             <gitb:reference>Issuance_1</gitb:reference>
         </gitb:specification>
-        <gitb:documentation>TBD</gitb:documentation>
+        <gitb:documentation><![CDATA[
+            <h4>Preconditions</h4>
+            <ol style="list-style-type: lower-alpha;">
+            <li>The wallet trusts the credential issuer’s signing certificate</li>
+            <li>The wallet trusts the issuer of the credential issuer’s access certificate</li>
+            <li>The wallet trusts the issuer of the credential issuer’s registration certificate</li>
+            </ol>
+            <h4>Test steps</h4>
+            <ol>
+            <li>The user starts the test case in ITB</li>
+            <li>The user scans the QR code with their wallet</li>
+            <li>The user completes the issuance process</li>
+            <li>ITB records the test execution result</li>
+            </ol>
+            <h4>Expected results</h4>
+            <ol>
+            <li>ITB displays a popup with a QR code containing the credential offer</li>
+            <li>The website of the issuer opens</li>
+            <li>The credential appears in the user’s wallet</li>
+            <li>The test execution result appears on the ITB screen</li>
+            </ol>
+        ]]></gitb:documentation>
     </metadata>
     <actors>
         <gitb:actor id="simulatedCredentialOffer" name="Simulated Credential Offer"/>
@@ -102,6 +123,12 @@
             <input name="successMessage">"The received http status code was 200."</input>
             <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
+        
+        <verify handler="ExpressionValidator" desc="Verify success of the credential issuance from logs response" stopOnError="true">
+            <input name="expression">$successful = "true"</input>
+            <input name="successMessage">"Credential Issuance was successful."</input>
+            <input name="failureMessage">"Credential Issuance failed."</input>
+        </verify>
 
         <!--Process Logs response-->
         <process handler="JsonPathProcessor" operation="process" output="count" stopOnError="true">
@@ -114,7 +141,7 @@
             <input name="content">$logsResponse</input>
             <input name="pointer">"/logs"</input>
         </process>
-        <log>"Logs: " || $logs</log>
+        <log>"logs from credential issuance: " || $logs</log>
         
         <verify handler="$DOMAIN{issuerValidationService}" desc="Validate logs from the issuer logs response" >
             <input name="text">$logsResponse</input>

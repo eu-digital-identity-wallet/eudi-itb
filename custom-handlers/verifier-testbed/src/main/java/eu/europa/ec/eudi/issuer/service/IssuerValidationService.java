@@ -27,6 +27,8 @@ import com.gitb.vs.Void;
 import eu.europa.ec.eudi.gitb.Utils;
 import eu.europa.ec.eudi.issuer.dto.CredentialOfferLogsTO;
 import eu.europa.ec.eudi.verifier.utils.Json;
+
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -48,18 +50,22 @@ public class IssuerValidationService implements ValidationService {
 
   @Override
   public ValidationResponse validate(ValidateRequest parameters) {
-    log.info("Received 'validate' command from test bed for session [{}]", parameters.getSessionId());
+    log.info(
+        "Received 'validate' command from test bed for session [{}]", parameters.getSessionId());
 
     String providedText = utils.getRequiredString(parameters.getInput(), "text");
     log.info("Retrieved issuer's logs from 'input' text.");
 
-    String expectedText = null;
+    boolean expectedSuccess = true;
     try {
-      expectedText = utils.getRequiredString(parameters.getInput(), "expected");
-      log.info("Retrieved 'expected' text.");
+      expectedSuccess =
+          Boolean.parseBoolean(utils.getRequiredString(parameters.getInput(), "expected"));
+      log.info("Retrieved 'expected' boolean.");
     } catch (Exception e) {
-      log.warn("None 'expected' text was received. Exception Message: {}", e.getMessage());
+      log.warn("None 'expected' boolean was received. Exception Message: {}", e.getMessage());
     }
+
+    Optional<String> expectedLog = utils.getOptionalString(parameters.getInput(), "expectedLog");
 
     CredentialOfferLogsTO providedLogs;
     try {
@@ -73,7 +79,12 @@ public class IssuerValidationService implements ValidationService {
     }
 
     TAR report;
-    if (providedLogs.getSuccessful()) {
+    if (expectedLog.isPresent()) {
+      if (providedLogs.getLogs().stream().noneMatch(log -> log.contains(expectedLog.get())))
+        report = utils.createReport(TestResultType.FAILURE);
+    } else if (providedLogs.getSuccessful()) {
+      report = utils.createReport(TestResultType.SUCCESS);
+    } else if (!expectedSuccess) {
       report = utils.createReport(TestResultType.SUCCESS);
     } else {
       report = utils.createReport(TestResultType.FAILURE);
@@ -97,25 +108,32 @@ public class IssuerValidationService implements ValidationService {
     return result;
   }
 
-  private void debugMatch(String name, String regex, String logLine) {
+  private String debugMatch(String name, String regex, String logLine) {
     Pattern p = Pattern.compile(regex);
     Matcher m = p.matcher(logLine);
 
     if (!m.find()) {
       log.error("{} not found in log.", name);
-      return;
+      return null;
     }
 
     log.info("{} found in: '{}'", name, m.group(0));
     int groupCount = m.groupCount();
     for (int i = 1; i <= groupCount; i++) {
-      try {
-        log.info("  group({}): '{}'", i, m.group(i));
-      } catch (Exception e) {
-        log.warn("  Failed to retrieve group({}). Exception: {}", i, e.getMessage());
-      }
+      log.info("  group({}): '{}'", i, m.group(i));
     }
+
+    String remaining = logLine.substring(m.end());
+    log.info("Remaining after {}: '{}'", name, remaining);
+
+    return remaining;
   }
+
+  private static final Pattern LOG_LINE_PATTERN =
+      Pattern.compile(
+          "^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3})\\s*\\|\\s*([\\w.]+)\\s*\\|\\s*"
+              + "(INFO|WARN|ERROR|DEBUG|TRACE)\\s*\\|\\s*(?:,\\s*)?(.*)$",
+          Pattern.DOTALL);
 
   private ObjectNode fromListToJSONArray(CredentialOfferLogsTO logs) {
     int info_counter_logs = 0;
@@ -126,47 +144,35 @@ public class IssuerValidationService implements ValidationService {
 
     ArrayNode json = this.json.getReader().createArrayNode();
     for (String logLine : logs.getLogs()) {
-      debugMatch("Timestamp", "^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}).*", logLine);
-      debugMatch("Logger name", "^\\s*\\S+\\s+(\\S+).*", logLine);
-      debugMatch("Level", ".*\\b(INFO|WARN|ERROR|DEBUG|TRACE)\\b.*", logLine);
-      log.info("Checked if log matches expected format: {}", logLine);
-
-      Pattern p =
-          Pattern.compile(
-              "^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3})\\s+([\\w\\.]+)\\s+(INFO|WARN|ERROR|DEBUG|TRACE)\\s+(?:,\\s*)?(.*)$");
-      Matcher m = p.matcher(logLine);
-
-      if (m.find()) {
-        ObjectNode logAsJSON = this.json.getReader().createObjectNode();
-        logAsJSON.put("timestamp", m.group(1));
-        logAsJSON.put("logger", m.group(2));
-        logAsJSON.put("level", m.group(3));
-        switch (m.group(3)) {
-          case "INFO" -> info_counter_logs++;
-          case "WARN" -> warn_counter_logs++;
-          case "ERROR" -> error_counter_logs++;
-        }
-        logAsJSON.put("message", m.group(4));
-        logAsJSON.put("full_log", logLine);
-        json.add(logAsJSON);
-        log.debug(logAsJSON.toString());
-      } else {
+      Matcher m = LOG_LINE_PATTERN.matcher(logLine);
+      if (!m.matches()) {
         log.warn(
             "Failed to retrieved required information (timestamp, logger name, level) from log {}",
             logLine);
+        continue;
       }
+      ObjectNode logAsJSON = this.json.getReader().createObjectNode();
+      logAsJSON.put("timestamp", m.group(1));
+      logAsJSON.put("logger", m.group(2));
+      logAsJSON.put("level", m.group(3));
+      logAsJSON.put("message", m.group(4));
+      logAsJSON.put("full_log", logLine);
+      switch (m.group(3)) {
+        case "INFO" -> info_counter_logs++;
+        case "WARN" -> warn_counter_logs++;
+        case "ERROR" -> error_counter_logs++;
+      }
+      json.add(logAsJSON);
+      log.debug(logAsJSON.toString());
     }
-
-    logsJsonObject.set("logs", json);
 
     ObjectNode counter = this.json.getReader().createObjectNode();
     counter.put("error_count", error_counter_logs);
     counter.put("warn_count", warn_counter_logs);
     counter.put("info_count", info_counter_logs);
     counter.put("total_count", logs.getCount());
-
     logsJsonObject.set("log_stats", counter);
-
+    logsJsonObject.set("logs", json);
     return logsJsonObject;
   }
 
