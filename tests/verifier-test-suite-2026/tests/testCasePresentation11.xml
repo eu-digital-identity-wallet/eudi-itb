@@ -118,7 +118,7 @@
 
         <log>"Final response status:" || $responseStatus</log>
         <verify handler="ExpressionValidator" desc="Validate if log exists for transaction id on verifier">
-            <input name="expression">$responseStatus = "400"</input>
+            <input name="expression">$responseStatus = "200"</input>
             <input name="successMessage">'Flow is complete'</input>
             <input name="failureMessage">'Flow failed!'</input>
         </verify>

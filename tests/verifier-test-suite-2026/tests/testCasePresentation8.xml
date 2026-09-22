@@ -117,8 +117,26 @@
 
         <verify handler="$DOMAIN{validationService}" desc="Validate logs" >
             <input name="text">$transactionEventLogs{response}{body}</input>
-            <input name="expectedEvent">"access_certificate_error"</input>
+            <input name="expectedEvent">"access_certificate_error_dc_api"</input>
         </verify>
+
+        <interact id="review" desc="Confirm response">
+            <instruct desc="Did wallet refused to present the credential?"></instruct>
+            <request
+                    desc="Did wallet refused to present the credential?"
+                    name="outcome"
+                    inputType="SELECT_SINGLE"
+                    options="Yes,No"
+                    required="true"
+                    default="No"
+            />
+        </interact>
+        <if desc="Did wallet showed an error?">
+            <cond>$review{outcome} = 'No'</cond>
+            <then>
+                <exit desc="Wallet has failed to pass the test"/>
+            </then>
+        </if>
     </steps>
     <output>
         <success>
