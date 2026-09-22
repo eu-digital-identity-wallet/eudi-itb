@@ -5,27 +5,123 @@
         <gitb:version>1.0</gitb:version>
         <gitb:description>This test case verifies that it is possible to sign a PDF document with the Remote Qualified Electronic Signature flow using OpenID4VP</gitb:description>
         <gitb:specification>
-            <gitb:reference>Remote_Presentation_21</gitb:reference>
+            <gitb:reference>QES-01</gitb:reference>
         </gitb:specification>
         <gitb:documentation><![CDATA[
-            <h4>Preconditions</h4>
-            <ol style="list-style-type: lower-alpha;">
-            <li>The wallet has a signature functionality available</li>
-            </ol>
-            <h4>Test steps</h4>
-            <ol>
-            <li>The wallet user starts the test case in ITB</li>
-            <li>The wallet user scans the QR code with their wallet</li>
-            <li>The wallet user gives permission to sign the document</li>
-            <li>ITB records the test execution result</li>
-            </ol>
-            <h4>Expected results</h4>
-            <ol>
-            <li>ITB displays a popup with a QR code containing the signing request</li>
-            <li>The wallet requests permission to sign the document</li>
-            <li>The signed document is shared with the remote reader</li>
-            <li>The test execution result appears on the ITB screen</li>
-            </ol>
+            <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt; mso-yfti-tbllook:1184;mso-padding-alt:0in 5.4pt 0in 5.4pt'>
+            <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Test case ID<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border:solid windowtext 1.0pt; border-left:none;mso-border-left-alt:solid windowtext .5pt;mso-border-alt: solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>QES-01<o:p></o:p></span></b></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:1'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Title<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border-top:none; border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>Remote Qualified Electronic Signature flow using OpenID4VP<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:2'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Test session type<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border-top:none; border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>Remote QES<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:3'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>P2P test case ID<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border-top:none; border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>Remote_Presentation_21<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:4'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Purpose<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border-top:none; border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>This test case verifies that it is possible to sign a PDF document with the Remote Qualified Electronic Signature flow using OpenID4VP<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:5'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Preconditions<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border-top:none; border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>N/A<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:6'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Remarks<o:p></o:p></span></b></p>
+            </td>
+            <td width=450 colspan=2 valign=top style='width:337.85pt;border-top:none; border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>N/A<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:7'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span
+            style='mso-ansi-language:EN-US'>Steps<o:p></o:p></span></b></p>
+            </td>
+            <td width=218 valign=top style='width:163.65pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Action<o:p></o:p></span></b></p>
+            </td>
+            <td width=232 valign=top style='width:174.2pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><b><span style='mso-ansi-language:EN-US'>Expected result<o:p></o:p></span></b></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:8'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>1<o:p></o:p></span></p>
+            </td>
+            <td width=218 valign=top style='width:163.65pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>The wallet user starts the test case in ITB<o:p></o:p></span></p>
+            </td>
+            <td width=232 valign=top style='width:174.2pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>ITB displays a popup with a QR code containing the signing request<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:9'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>2<o:p></o:p></span></p>
+            </td>
+            <td width=218 valign=top style='width:163.65pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>The wallet user scans the QR code with their wallet<o:p></o:p></span></p>
+            </td>
+            <td width=232 valign=top style='width:174.2pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>The wallet requests permission to sign the document<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:10'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>3<o:p></o:p></span></p>
+            </td>
+            <td width=218 valign=top style='width:163.65pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'> 
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>The wallet user gives permission to sign the document<o:p></o:p></span></p>
+            </td>
+            <td width=232 valign=top style='width:174.2pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'> 
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>The signed document is shared with the remote reader<o:p></o:p></span></p>
+            </td>
+            </tr>
+            <tr style='mso-yfti-irow:11;mso-yfti-lastrow:yes'>
+            <td width=173 valign=top style='width:129.65pt;border:solid windowtext 1.0pt; border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt; padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>4<o:p></o:p></span></p>
+            </td>
+            <td width=218 valign=top style='width:163.65pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>ITB records the test execution result<o:p></o:p></span></p>
+            </td>
+            <td width=232 valign=top style='width:174.2pt;border-top:none;border-left: none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; mso-border-top-alt:solid windowtext .5pt;mso-border-left-alt:solid windowtext .5pt; mso-border-alt:solid windowtext .5pt;padding:0in 5.4pt 0in 5.4pt'>
+            <p class=MsoNormal style='margin-bottom:8.0pt;line-height:13.0pt'><span style='mso-ansi-language:EN-US'>The test execution result appears on the ITB screen<o:p></o:p></span></p>
+            </td>
+            </tr>
+            </table>
         ]]></gitb:documentation>
     </metadata>
 
