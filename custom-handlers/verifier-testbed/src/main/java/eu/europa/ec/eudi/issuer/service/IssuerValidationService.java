@@ -27,7 +27,9 @@ import com.gitb.vs.Void;
 import eu.europa.ec.eudi.gitb.Utils;
 import eu.europa.ec.eudi.issuer.dto.CredentialOfferLogsTO;
 import eu.europa.ec.eudi.verifier.utils.Json;
-
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,8 +82,10 @@ public class IssuerValidationService implements ValidationService {
 
     TAR report;
     if (expectedLog.isPresent()) {
-      if (providedLogs.getLogs().stream().noneMatch(log -> log.contains(expectedLog.get())))
-        report = utils.createReport(TestResultType.FAILURE);
+      boolean logFound =
+          providedLogs.getLogs().stream()
+              .anyMatch(logEntry -> logEntry.contains(expectedLog.get()));
+      report = utils.createReport(logFound ? TestResultType.SUCCESS : TestResultType.FAILURE);
     } else if (providedLogs.getSuccessful()) {
       report = utils.createReport(TestResultType.SUCCESS);
     } else if (!expectedSuccess) {
@@ -91,12 +95,9 @@ public class IssuerValidationService implements ValidationService {
     }
     log.info("Added test result type to Report.");
 
-    AnyContent logs;
     try {
-      ObjectNode logsJSON = fromListToJSONArray(providedLogs);
+      fromCredentialOfferToJson(providedLogs, report);
       log.info("Created JSON Array from list of issuer's logs.");
-      logs = toContent(logsJSON);
-      report.getContext().getItem().add(logs);
       log.info("Added issuer's logs to Report.");
     } catch (JsonProcessingException e) {
       log.error("Failed to add issuer's log to Report. Exception Message: {}", e.getMessage());
@@ -108,41 +109,20 @@ public class IssuerValidationService implements ValidationService {
     return result;
   }
 
-  private String debugMatch(String name, String regex, String logLine) {
-    Pattern p = Pattern.compile(regex);
-    Matcher m = p.matcher(logLine);
-
-    if (!m.find()) {
-      log.error("{} not found in log.", name);
-      return null;
-    }
-
-    log.info("{} found in: '{}'", name, m.group(0));
-    int groupCount = m.groupCount();
-    for (int i = 1; i <= groupCount; i++) {
-      log.info("  group({}): '{}'", i, m.group(i));
-    }
-
-    String remaining = logLine.substring(m.end());
-    log.info("Remaining after {}: '{}'", name, remaining);
-
-    return remaining;
-  }
-
   private static final Pattern LOG_LINE_PATTERN =
       Pattern.compile(
           "^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3})\\s*\\|\\s*([\\w.]+)\\s*\\|\\s*"
               + "(INFO|WARN|ERROR|DEBUG|TRACE)\\s*\\|\\s*(?:,\\s*)?(.*)$",
           Pattern.DOTALL);
 
-  private ObjectNode fromListToJSONArray(CredentialOfferLogsTO logs) {
+  private void fromCredentialOfferToJson(CredentialOfferLogsTO logs, TAR report)
+      throws JsonProcessingException {
     int info_counter_logs = 0;
     int warn_counter_logs = 0;
     int error_counter_logs = 0;
 
-    ObjectNode logsJsonObject = this.json.getReader().createObjectNode();
-
-    ArrayNode json = this.json.getReader().createArrayNode();
+    List<String> errors = new ArrayList<>();
+    ArrayNode logsJson = this.json.getReader().createArrayNode();
     for (String logLine : logs.getLogs()) {
       Matcher m = LOG_LINE_PATTERN.matcher(logLine);
       if (!m.matches()) {
@@ -151,37 +131,40 @@ public class IssuerValidationService implements ValidationService {
             logLine);
         continue;
       }
-      ObjectNode logAsJSON = this.json.getReader().createObjectNode();
-      logAsJSON.put("timestamp", m.group(1));
-      logAsJSON.put("logger", m.group(2));
-      logAsJSON.put("level", m.group(3));
-      logAsJSON.put("message", m.group(4));
-      logAsJSON.put("full_log", logLine);
+      ObjectNode singleLogJson = this.json.getReader().createObjectNode();
+      singleLogJson.put("timestamp", m.group(1));
+      singleLogJson.put("logger", m.group(2));
+      singleLogJson.put("level", m.group(3));
+      singleLogJson.put("message", m.group(4));
+      singleLogJson.put("full_log", logLine);
       switch (m.group(3)) {
         case "INFO" -> info_counter_logs++;
         case "WARN" -> warn_counter_logs++;
-        case "ERROR" -> error_counter_logs++;
+        case "ERROR" -> {
+          error_counter_logs++;
+          errors.add(logLine);
+        }
       }
-      json.add(logAsJSON);
-      log.debug(logAsJSON.toString());
+      logsJson.add(singleLogJson);
     }
+    toContentAndAddToReport(logsJson, "Issuer's Logs", report);
 
     ObjectNode counter = this.json.getReader().createObjectNode();
     counter.put("error_count", error_counter_logs);
     counter.put("warn_count", warn_counter_logs);
     counter.put("info_count", info_counter_logs);
     counter.put("total_count", logs.getCount());
-    logsJsonObject.set("log_stats", counter);
-    logsJsonObject.set("logs", json);
-    return logsJsonObject;
+    toContentAndAddToReport(counter, "Issuer's Logs Stats", report);
+
+    if (!errors.isEmpty()) {
+      toContentAndAddToReport((Serializable) errors, "Errors", report);
+    }
   }
 
-  private AnyContent toContent(ObjectNode logs) throws JsonProcessingException {
-    log.info("Adding logs to Result.");
-    log.debug("Logs: {}", logs.toString());
-
+  private void toContentAndAddToReport(Serializable logs, String name, TAR report)
+      throws JsonProcessingException {
     AnyContent result = new AnyContent();
-    result.setName("Issuer's Logs");
+    result.setName(name);
     result.setType("application/json");
     result.setEncoding("UTF-8");
     result
@@ -191,6 +174,7 @@ public class IssuerValidationService implements ValidationService {
                 "JSON Data",
                 json.getWriter().writeValueAsString(logs),
                 ValueEmbeddingEnumeration.STRING));
-    return result;
+
+    report.getContext().getItem().add(result);
   }
 }
