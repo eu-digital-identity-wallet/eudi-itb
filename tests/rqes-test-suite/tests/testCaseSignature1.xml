@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testcase id="testCase1_documentRetrieval" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
     <metadata>
-        <gitb:name>Signing of a document retrieved from a relying party</gitb:name>
+        <gitb:name>Remote Qualified Electronic Signature flow using OpenID4VP</gitb:name>
         <gitb:version>1.0</gitb:version>
-        <gitb:description>This test case verifies that it is possible to retrieve a document requiring a signature from a relying party and sign it using the wallet. </gitb:description>
+        <gitb:description>This test case verifies that it is possible to sign a PDF document with the Remote Qualified Electronic Signature flow using OpenID4VP</gitb:description>
         <gitb:specification>
-            <gitb:reference>Signature_DocumentRetrieval_1</gitb:reference>
+            <gitb:reference>Remote_Presentation_21</gitb:reference>
         </gitb:specification>
         <gitb:documentation><![CDATA[
             <h4>Preconditions</h4>
             <ol style="list-style-type: lower-alpha;">
-            <li>The user of the remote reader has shared its url to the wallet user</li>
-            <li>The wallet has a valid PID</li>
             <li>The wallet has a signature functionality available</li>
             </ol>
             <h4>Test steps</h4>
             <ol>
-            <li>The wallet user navigates to the url of the relying party</li>
-            <li>The wallet user clicks on a link/scans a QR code to start document retrieval and signing</li>
-            <li>The wallet user gives permission to sign the document received</li>
+            <li>The wallet user starts the test case in ITB</li>
+            <li>The wallet user scans the QR code with their wallet</li>
+            <li>The wallet user gives permission to sign the document</li>
+            <li>ITB records the test execution result</li>
             </ol>
             <h4>Expected results</h4>
             <ol>
-            <li>The website of the relying party opens</li>
-            <li>The wallet opens and permission to sign the document is requested</li>
-            <li>The wallet signs the document retrieved from the relying party</li>
-            <li>The signed document is sent to the relying party</li>
-            <li>The signed document is shown in the relying party</li>
+            <li>ITB displays a popup with a QR code containing the signing request</li>
+            <li>The wallet requests permission to sign the document</li>
+            <li>The signed document is shared with the remote reader</li>
+            <li>The test execution result appears on the ITB screen</li>
             </ol>
         ]]></gitb:documentation>
     </metadata>
@@ -38,68 +36,59 @@
     </actors>
 
     <steps>
-        <verify stopOnError="true" id="checkStatusCode" handler="ExpressionValidator" desc="Validate Document Retrieval URL" >
-            <input name="expression">$DOMAIN{documentRetrievalURL} != ""</input>
-            <input name="successMessage">"The Document Retrieval URL is defined."</input>
-            <input name="failureMessage">"The Document Retrieval URL is not defined."</input>
-        </verify>
-        <verify stopOnError="true" id="checkStatusCode" handler="ExpressionValidator" desc="Validate Relying Party Logs URL" >
-            <input name="expression">$DOMAIN{logsURL} != ""</input>
-            <input name="successMessage">"The Relying Party Logs URL is defined."</input>
-            <input name="failureMessage">"The Relying Party Logs URL is not defined."</input>
+        <verify handler="ExpressionValidator" desc="Verify Relying Party URL is set" stopOnError="true">
+            <input name="expression">$DOMAIN{relyingPartyURL} != ""</input>
+            <input name="successMessage">"URL of Relying Party requesting document signing is defined."</input>
+            <input name="failureMessage">"URL of Relying Party requesting document signing is not defined."</input>
         </verify>
 
-        <log>"Document Retrieval Request Object retrieved from: " || $DOMAIN{documentRetrievalURL}</log>
+        <assign to="documentSignatureSetupURL">$DOMAIN{relyingPartyURL} || "/tests/get"</assign>
+        <assign to="signedDocumentURL">$DOMAIN{relyingPartyURL} || "/tests/get"</assign>
+        <assign to="relyingPartyLogsURL">$DOMAIN{relyingPartyURL} || "/tests/logs"</assign>
+        <log>"Document Signature Request Object retrieved from: " || $documentSignatureSetupURL</log>
         
-        <!--Making an HTTP Request to the Relying Party's Document Retrieval Endpoint -->
         <assign to="httpHeaders{Content-Type}">"application/json"</assign>
-        <send stopOnError="true" id="documentRetrievalRequest" desc="Send Document Retrieval request to Relying Party" handler="HttpMessagingV2" from="simulatedDocumentRetrieval" to="relyingParty">
-            <input name="uri">$DOMAIN{documentRetrievalURL}</input>
+        <send  id="documentSignatureRequest" desc="Send request to setup document signing request" handler="HttpMessagingV2" from="simulatedDocumentRetrieval" to="relyingParty" stopOnError="true">
+            <input name="uri">$documentSignatureSetupURL</input>
             <input name="method">"GET"</input>
             <input name="headers">$httpHeaders</input>
         </send>
-        <verify stopOnError="true" id="checkStatusCode" handler="StringValidator" desc="Validate Document Retrieval Response HTTP status">
-            <input name="actual">$documentRetrievalRequest{response}{status}</input>
-            <input name="expected">"200"</input>
-            <input name="successMessage">"The received Document Retrieval HTTP status was 200."</input>
-            <input name="failureMessage">"The received Document Retrieval HTTP status was not 200."</input>
+        <verify handler="ExpressionValidator" desc="Verify http status code of document signature setup" stopOnError="true">
+            <input name="expression">$documentSignatureRequest{response}{status} = "200"</input>
+            <input name="successMessage">"The received http status code was 200."</input>
+            <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
-        <log>"Document Retrieval response status:" || $documentRetrievalRequest{response}{status}</log>
-
-        <assign to="documentRetrievalResponse" source="$documentRetrievalRequest{response}{body}" type="string"/> <!--Covert binary to string-->
-        <process stopOnError="true" handler="JsonPathProcessor" operation="process" output="transactionId"> <!--Extract transaction_id from response-->
-           <input name="content">$documentRetrievalResponse</input>
+        <assign to="documentSignatureResponse" source="$documentSignatureRequest{response}{body}" type="string"/>
+        <process handler="JsonPathProcessor" operation="process" output="transactionId" stopOnError="true">
+           <input name="content">$documentSignatureResponse</input>
            <input name="expression">"$.transaction_id"</input>
            <input name="outputType">"default"</input>
         </process>
-        <log> "Document Retrieval response transaction id:" || $transactionId</log>
-        <process stopOnError="true" handler="JsonPathProcessor" operation="process" output="base64Img"> <!--Extract base64_img from response-->
-           <input name="content">$documentRetrievalResponse</input>
+        <log> "document signature setup response transaction id:" || $transactionId</log>
+        <process handler="JsonPathProcessor" operation="process" output="base64Img" stopOnError="true" >
+           <input name="content">$documentSignatureResponse</input>
            <input name="expression">"$.qr_code"</input>
            <input name="outputType">"default"</input>
         </process>
-        <log>"Document Retrieval response base64 image:" || $base64Img</log>
+        <log>"document signature setup response qr_code:" || $base64Img</log>
 
-        <!--Display Document Retrieval QrCode-->
-        <interact stopOnError="true" inputTitle="Scan the QR Code" desc="Scan the QR Code with your wallet." with="wallet">
+        <interact inputTitle="Scan the QR Code" desc="Scan the QR Code with your wallet." with="wallet" stopOnError="true" >
             <instruct desc="Click on the magnifying glass to display the QR code"/>
             <instruct desc="Scan this QR with your wallet" contentType="BASE64" mimeType="image/png">$base64Img</instruct>
             <instruct desc="After signing the document with your wallet, click on the Close button to continue"/>
         </interact>
 
-        <!--Making an HTTP Request to the Relying Party to retrieve the signed document received from the Wallet-->
-        <log>"Retrieving signed document at: " || $DOMAIN{getSignedDocURL} || "/" || $transactionId</log>
+        <log>"Retrieving signed document at: " || $signedDocumentURL || "/" || $transactionId</log>
         <assign to="attempt" type="number">1</assign>
         <assign to="maxAttempts" type="number">$DOMAIN{maxAttempts}</assign>
         <assign to="signedDocStatus">'404'</assign>
         <assign to="signedDocResponse">'none'</assign>
-
-        <while stopOnError="true" title="HTTP Call Loop to the Relying Party" desc="Make HTTP calls until successful signed document is received or timeout">
-            <cond><![CDATA[$attempt <= $maxAttempts and $signedDocStatus != '200']]></cond>
+        <while title="HTTP Call Loop to the Relying Party" desc="Make HTTP calls until successful signed document is received or timeout" stopOnError="true" >
+            <cond><![CDATA[$attempt <= $maxAttempts and $signedDocStatus = '404']]></cond>
             <do>
                 <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
                 <send id="signedDocResponse" desc="Retrieve signed document" handler="HttpMessagingV2" from="simulatedDocumentRetrieval" to="relyingParty">
-                    <input name="uri">$DOMAIN{getSignedDocURL} || "/" || $transactionId</input>
+                    <input name="uri">$signedDocumentURL || "/" || $transactionId</input>
                     <input name="method">"GET"</input>
                     <input name="headers">$httpHeaders</input>
                 </send>
@@ -107,27 +96,29 @@
                 <assign to="attempt" type="number">$attempt + 1</assign>
                 <process handler="DelayProcessor" operation="delay" input="$DOMAIN{delayBetweenCalls}"/>
             </do>
-        </while>        
-        <verify stopOnError="true" id="checkSignedDocStatusCode" handler="StringValidator" desc="Validate the HTTP status of the signed document retrieval request">
-            <input name="actual">$signedDocStatus</input>
-            <input name="expected">"200"</input>
-            <input name="failureMessage">"The received HTTP status was not 200."</input>
+        </while>         
+        <verify handler="ExpressionValidator" desc="Verify http status code of the signed document retrieval request"  stopOnError="true" >
+            <input name="expression">$signedDocStatus = "200"</input>
+            <input name="successMessage">"The received http status code was 200."</input>
+            <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
-        <log>"Logs Retrieval status:" || $signedDocStatus</log>
         <log>"Logs Retrieval body:" || $signedDocResponse{response}{body}</log>
 
-        <!--Retrieve Logs Response-->
-
         <send id="signatureLogs" desc="Retrieve signature logs" handler="HttpMessagingV2" from="simulatedDocumentRetrieval" to="relyingParty">
-            <input name="uri">$DOMAIN{logsURL} || "/"  || $transactionId</input>
+            <input name="uri">$relyingPartyLogsURL || "/"  || $transactionId</input>
             <input name="method">"GET"</input>
         </send>
-        <verify stopOnError="true" id="checkSignatureLogsStatusCode" handler="StringValidator" desc="Validate the HTTP status of the signature logs retrieval request">
-            <input name="actual">$signatureLogs{response}{status}</input>
-            <input name="expected">"200"</input>
-            <input name="failureMessage">"The received HTTP status was not 200."</input>
+        <verify handler="ExpressionValidator" desc="Verify http status code of the signature logs retrieval" stopOnError="true">
+            <input name="expression">$signatureLogs{response}{status} = "200"</input>
+            <input name="successMessage">"The received http status code was 200."</input>
+            <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
         <log>$signatureLogs{response}{body}</log>
+
+        <verify handler="$DOMAIN{qesValidationService}" desc="Validate signature logs" >
+            <input name="text">$signatureLogs{response}{body}</input>
+        </verify>
+
     </steps>
     <output>
         <success>

@@ -85,8 +85,7 @@ public class ServiceConfig {
   }
 
   @Bean
-  public EndpointImpl qesValidationService(
-        Bus cxfBus, QesValidationService qesValidationService) {
+  public EndpointImpl rqesValidationService(Bus cxfBus, QesValidationService qesValidationService) {
     EndpointImpl endpoint = new EndpointImpl(cxfBus, qesValidationService);
     endpoint.setServiceName(new QName("http://www.gitb.com/vs/v1/", "ValidationService"));
     endpoint.setEndpointName(new QName("http://www.gitb.com/vs/v1/", "ValidationServicePort"));
