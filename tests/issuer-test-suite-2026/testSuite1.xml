@@ -34,4 +34,5 @@
     <testcase id="issue_pid_mdoc_credentialoffer_revocation"/>
     <testcase id="issue_pid_sdjwt_credentialoffer_invalid_metadata"/>
     <testcase id="issue_pid_mdoc_credentialoffer_invalid_metadata"/>
+    <testcase id="issue_mdl_mdoc_credentialoffer_revocation"/>
 </testsuite>
