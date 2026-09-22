@@ -27,8 +27,8 @@ public record QesDocumentRetrievalLogsTO(
     @JsonProperty("logs") List<LogEntry> logs,
     @JsonProperty("successful") boolean successful) {
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record LogEntry(
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public record LogEntry(
       @JsonProperty("timestamp") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
           LocalDateTime timestamp,
       @JsonProperty("level") String level,
