@@ -111,14 +111,22 @@ class VerifierValidationService(
                     null
                 }
             "access_certificate_error" -> {
-                if ((warningsMap["Verifier failed to get wallet"] == null) || (
-                        (
-                            events.find {
-                                it is RequestObjectRetrieved
-                            } == null
-                        ) && (events.find { it is VerifierGotWalletResponse } != null)
-                    )
+                val requestObjectRetrieved = events.any { it is RequestObjectRetrieved }
+                val verifierGotWalletResponse = events.any { it is VerifierGotWalletResponse }
+                val verifierFailedToGetWallet = events.any { it is VerifierFailedToGetWalletResponse }
+
+                if (
+                    !requestObjectRetrieved ||
+                    verifierGotWalletResponse ||
+                    !verifierFailedToGetWallet
                 ) {
+                    "Wallet should fail to post response since access certificate is invalid but did not"
+                } else {
+                    null
+                }
+            }
+            "access_certificate_error_dc_api" -> {
+                if (events.any { it is VerifierGotWalletResponse }) {
                     "Wallet should fail to post response since access certificate is invalid but did not"
                 } else {
                     null
