@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite id="verificationTestSuite" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
+<testsuite id="issuanceTestSuite" xmlns="http://www.gitb.com/tdl/v1/" xmlns:gitb="http://www.gitb.com/core/v1/">
     <metadata>
-        <gitb:name>OID4VCI Reference Issuer Integration Tests</gitb:name>
-        <gitb:description>Test suite to verify proper integration between the EUDI Wallet and the reference Issuer.</gitb:description>
+        <gitb:name>Issuance Integration Tests</gitb:name>
+        <gitb:description>This scenario validates the issuance of verifiable credentials from an issuer to a digital wallet using the OpenID for Verifiable Credential Issuance (OID4VCI) 1.0 protocol.</gitb:description>
         <gitb:version>1.0</gitb:version>
     </metadata>
     <actors>
