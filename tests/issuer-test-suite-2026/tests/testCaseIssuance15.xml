@@ -200,13 +200,13 @@
             <cond><![CDATA[$attempt <= $maxAttempts and $successful != "true"]]></cond>
             <do>
                 <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
-                <send id="logsRequest" desc="Retrieve logs to check Credential Offer success" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
+                <send id="successfulLogsRequest" desc="Retrieve logs to check Credential Offer success" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
                     <input name="uri">$credentialIssuanceLogsURL || "?session_id=" || $sessionID</input>
                     <input name="method">"GET"</input>
                     <input name="headers">$httpHeaders</input>
                 </send>
                 <process handler="JsonPathProcessor" operation="process" output="successfulResponse">
-                   <input name="content">$logsRequest{response}{body}</input>
+                   <input name="content">$successfulLogsRequest{response}{body}</input>
                    <input name="expression">"$.successful"</input>
                    <input name="outputType">"default"</input>
                 </process>
@@ -215,9 +215,9 @@
                 <assign to="attempt" type="number">$attempt + 1</assign>
                 <process handler="DelayProcessor" operation="delay" input="$DOMAIN{delayBetweenCalls}"/>
             </do>
-        </while>        
+        </while>
         <verify handler="ExpressionValidator" desc="Verify http status code of the credential issuance logs request" stopOnError="true">
-            <input name="expression">$logsRequest{response}{status} = "200"</input>
+            <input name="expression">$successfulLogsRequest{response}{status} = "200"</input>
             <input name="successMessage">"The received http status code was 200."</input>
             <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
@@ -239,13 +239,17 @@
             <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
 
-        <!--Process Logs response-->
         <send id="logsRequest" desc="Retrieve logs of credential issuance and revocation" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
             <input name="uri">$credentialIssuanceLogsURL || "?session_id=" || $sessionID</input>
             <input name="method">"GET"</input>
             <input name="headers">$httpHeaders</input>
         </send>
         <assign to="logsResponse" type="string">$logsRequest{response}{body}</assign>
+        <verify handler="ExpressionValidator" desc="Verify http status code of the credential issuance logs request" stopOnError="true">
+            <input name="expression">$logsRequest{response}{status} = "200"</input>
+            <input name="successMessage">"The received http status code was 200."</input>
+            <input name="failureMessage">"The received http status code was not 200."</input>
+        </verify>
         <process handler="JsonPathProcessor" operation="process" output="count" stopOnError="true">
            <input name="content">$logsResponse</input>
            <input name="expression">"$.count"</input>
@@ -262,7 +266,7 @@
             <input name="text">$logsResponse</input>
             <input name="expectedLog">"Credential revoked and verified as revoked"</input>
         </verify>
-         <interact id="review" desc="Confirm credential was revoked">
+        <interact id="review" desc="Confirm credential was revoked">
             <request desc="Does credential show up as revoked in the wallet?"
                     name="outcome" inputType="SELECT_SINGLE" options="Yes,No" required="true" default="No"/>
         </interact>
