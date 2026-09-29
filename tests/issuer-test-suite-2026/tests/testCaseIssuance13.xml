@@ -142,7 +142,7 @@
         
         <!--Making an HTTP Request to the Issuer's Credential Offer Endpoint -->
         <assign to="httpHeaders{Content-Type}">"application/json"</assign>
-        <send id="credentialOfferRequest" desc="Send request to generate Credential Offer for PID issuance (SD-JWT)" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer" stopOnError="true">
+        <send id="credentialOfferRequest" desc="Send request to generate a Credential Offer for PID issuance (SD-JWT)" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer" stopOnError="true">
             <input name="uri">$credentialOfferSetupURL || "?credential_configuration_id=" || $credentialConfigurationId || "&amp;frontend_id=" || $frontendId </input>
             <input name="method">"GET"</input>
             <input name="headers">$httpHeaders</input>
@@ -173,7 +173,7 @@
         </process>
 
         <!--Display Credential Offer QrCode-->
-        <interact inputTitle="Scan the QR Code" desc="Scan the QR Code with your wallet." with="wallet" stopOnError="true" >
+        <interact inputTitle="Scan the QR code" desc="Scan the QR code with your wallet." with="wallet" stopOnError="true" >
             <instruct desc="Click on the magnifying glass to display the QR code"/>
             <instruct desc="Scan this QR with your wallet" mimeType="image/png">$qrCodeImg</instruct> <!--contentType="BASE64" -->
             <instruct desc="After issuing the PID in your wallet or if issuance fails, click on the Close button to continue"/>
@@ -186,11 +186,11 @@
         <assign to="successful" type="string">"false"</assign>
 
         <log>"Retrieving logs at: " || $credentialIssuanceLogsURL || "?session_id=" || $sessionID</log>
-        <while title="HTTP Call Loop to the Issuer" desc="Make HTTP calls until successful Credential Offer or timeout" stopOnError="true">
+        <while title="HTTP Polling Loop to the Issuer" desc="Make HTTP calls until Credential Offer succeeds or timeout occurs" stopOnError="true">
             <cond><![CDATA[$attempt <= $maxAttempts and $successful != "true"]]></cond>
             <do>
                 <log>"Making HTTP request (attempt " || $attempt || ")..."</log>
-                <send id="logsRequest" desc="Retrieve logs to check Credential Offer success" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
+                <send id="logsRequest" desc="Retrieve logs to check whether the Credential Offer succeeded" handler="HttpMessagingV2" from="simulatedCredentialOffer" to="issuer">
                     <input name="uri">$credentialIssuanceLogsURL || "?session_id=" || $sessionID</input>
                     <input name="method">"GET"</input>
                     <input name="headers">$httpHeaders</input>
@@ -208,14 +208,13 @@
             </do>
         </while>
         
-        
         <verify handler="ExpressionValidator" desc="Verify http status code of the credential issuance logs request" stopOnError="true">
             <input name="expression">$logsRequest{response}{status} = "200"</input>
             <input name="successMessage">"The received http status code was 200."</input>
             <input name="failureMessage">"The received http status code was not 200."</input>
         </verify>
 
-        <verify handler="ExpressionValidator" desc="Verify credential issuance failed from logs response" stopOnError="true">
+        <verify handler="ExpressionValidator" desc="Verify that the credential issuance failed, based on the logs response" stopOnError="true">
             <input name="expression">$successful != "true"</input>
             <input name="successMessage">"Issuance failed as expected."</input>
             <input name="failureMessage">"Issuance did not fail as expected."</input>
@@ -234,18 +233,19 @@
         </process>
         <log>"Logs: " || $logs</log>
         
-        <verify handler="$DOMAIN{issuerValidationService}" desc="Validate logs from the issuer logs response" >
+        <verify handler="$DOMAIN{issuerValidationService}" desc="Validate the logs in the issuer's logs response" >
             <input name="text">$logsResponse</input>
             <input name="expected">"false"</input>
         </verify>
-        <interact id="review" desc="Confirm wallet response">
-            <request desc="Did wallet showed a warning regarding the invalid metadata, or did it fail because of it?"
+
+        <interact id="review" desc="Confirm the wallet response">
+            <request desc="Did the wallet show a warning about the invalid metadata or did it fail because of it?"
                     name="outcome" inputType="SELECT_SINGLE" options="Yes,No" required="true" default="No"/>
         </interact>
-        <if desc="Did wallet showed a warning?">
+        <if desc="Check whether the wallet showed a warning about the invalid metadata">
             <cond>$review{outcome} = 'No'</cond>
             <then>
-                <exit desc="Wallet has failed to pass the test"/>
+                <exit desc="The wallet failed to pass the test"/>
             </then>
         </if>
     </steps>
