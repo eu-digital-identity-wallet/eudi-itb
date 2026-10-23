@@ -140,7 +140,14 @@ class VerifierValidationService(
                 val walletQuery = walletResponseEvent?.walletResponse
                 val successCheck = verifierWalletResponseEvent != null
 
-                if (verifierQuery == walletQuery && successCheck) {
+                val walletResponse = verifierQuery ?: walletQuery
+                val walletError = walletResponse?.takeIf { it.isObject }?.get("error")?.asText()
+
+                if (walletError != null) {
+                    val description = walletResponse.get("error_description")?.asText()
+                    val details = listOfNotNull(walletError, description).joinToString(" - ")
+                    "Wallet returned an error instead of presenting a credential: $details"
+                } else if (verifierQuery == walletQuery && successCheck) {
                     null
                 } else {
                     "Wallet query and verifier query do not match"
